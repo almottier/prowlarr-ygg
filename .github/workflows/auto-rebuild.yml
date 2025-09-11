@@ -1,4 +1,4 @@
-name: Auto Rebuild on Base Image Update
+name: Auto Rebuild
 
 permissions:
   contents: read
@@ -40,11 +40,23 @@ jobs:
           
       - name: Get current ygg-api indexer gist hash
         id: gist-hash
-        run: |
-          # Get the latest commit hash from the YGG-API gist
-          GIST_HASH=$(curl -s https://api.github.com/gists/8bfded23ef23ec78f6678896f42a2b60 | jq -r '.history[0].version')
-          echo "hash=$GIST_HASH" >> $GITHUB_OUTPUT
-          echo "Current gist hash: $GIST_HASH"
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 2
+          max_attempts: 3
+          retry_wait_seconds: 5
+          command: |
+            # Fetch raw content from public gist
+            GIST_CONTENT=$(curl -s https://gist.githubusercontent.com/Clemv95/8bfded23ef23ec78f6678896f42a2b60/raw/ygg-api-download.yml)
+            GIST_HASH=$(echo "$GIST_CONTENT" | sha256sum | cut -d' ' -f1)
+            
+            if [ -z "$GIST_CONTENT" ] ; then
+              echo "Got empty content, response was:"
+              echo "$GIST_CONTENT" | head -5
+              exit 1
+            fi
+            echo "hash=$GIST_HASH" >> $GITHUB_OUTPUT
+            echo "Current gist hash: $GIST_HASH"
           
       - name: Check if rebuild needed
         id: check-rebuild
