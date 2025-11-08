@@ -15,6 +15,11 @@ RUN echo "Fetching YGG-API gist hash: ${GIST_HASH}" && \
     cp /Clemv95/ygg-api/ygg-api-download.yml /app/indexer-definitions/ && \
     rm -rf /Clemv95
 
+# Download ygege indexer
+RUN git clone https://github.com/UwUDev/ygege.git /tmp/ygege && \
+    cp /tmp/ygege/ygege.yml /app/indexer-definitions/ && \
+    rm -rf /tmp/ygege
+
 # Copy init script and make it executable
 COPY init-indexers.sh /app/init-indexers.sh
 RUN chmod +x /app/init-indexers.sh && \
