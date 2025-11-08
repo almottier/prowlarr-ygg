@@ -57,7 +57,27 @@ jobs:
             fi
             echo "hash=$GIST_HASH" >> $GITHUB_OUTPUT
             echo "Current gist hash: $GIST_HASH"
-          
+
+      - name: Get current ygege indexer hash
+        id: ygege-hash
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 2
+          max_attempts: 3
+          retry_wait_seconds: 5
+          command: |
+            # Fetch raw content from ygege repository
+            YGEGE_CONTENT=$(curl -s https://raw.githubusercontent.com/UwUDev/ygege/refs/heads/master/ygege.yml)
+            YGEGE_HASH=$(echo "$YGEGE_CONTENT" | sha256sum | cut -d' ' -f1)
+
+            if [ -z "$YGEGE_CONTENT" ] ; then
+              echo "Got empty content, response was:"
+              echo "$YGEGE_CONTENT" | head -5
+              exit 1
+            fi
+            echo "hash=$YGEGE_HASH" >> $GITHUB_OUTPUT
+            echo "Current ygege hash: $YGEGE_HASH"
+
       - name: Check if rebuild needed
         id: check-rebuild
         run: |
@@ -66,19 +86,26 @@ jobs:
           CURRENT_BASE_DIGEST="${{ steps.base-digest.outputs.digest }}"
           LAST_GIST_HASH="${{ vars.LAST_GIST_HASH || 'none' }}"
           CURRENT_GIST_HASH="${{ steps.gist-hash.outputs.hash }}"
-          
+          LAST_YGEGE_HASH="${{ vars.LAST_YGEGE_HASH || 'none' }}"
+          CURRENT_YGEGE_HASH="${{ steps.ygege-hash.outputs.hash }}"
+
           REBUILD=false
-          
+
           if [ "$LAST_BASE_DIGEST" != "$CURRENT_BASE_DIGEST" ]; then
             echo "Base image updated. Rebuild needed."
             REBUILD=true
           fi
-          
+
           if [ "$LAST_GIST_HASH" != "$CURRENT_GIST_HASH" ]; then
             echo "YGG-API gist updated. Rebuild needed."
             REBUILD=true
           fi
-          
+
+          if [ "$LAST_YGEGE_HASH" != "$CURRENT_YGEGE_HASH" ]; then
+            echo "ygege indexer updated. Rebuild needed."
+            REBUILD=true
+          fi
+
           if [ "$REBUILD" = true ]; then
             echo "rebuild=true" >> $GITHUB_OUTPUT
           else
@@ -112,3 +139,4 @@ jobs:
           # https://github.com/almottier/prowlarr-ygg/settings/variables/actions
           gh variable set LAST_BASE_DIGEST --body "${{ steps.base-digest.outputs.digest }}"
           gh variable set LAST_GIST_HASH --body "${{ steps.gist-hash.outputs.hash }}"
+          gh variable set LAST_YGEGE_HASH --body "${{ steps.ygege-hash.outputs.hash }}"
