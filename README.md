@@ -13,7 +13,7 @@ ghcr.io/almottier/prowlarr-ygg
 - Based on the latest [hotio/prowlarr](https://hotio.dev/containers/prowlarr/) image
 - Two YGGTorrent indexers pre-installed in `/config/Definitions/Custom/`:
   - [Clemv95/Ygg-API](https://gist.github.com/Clemv95/8bfded23ef23ec78f6678896f42a2b60) using [yggapi](https://yggapi.eu/)
-  - [UwUDev/ygege](https://github.com/UwUDev/ygege)
+  - [UwUDev/ygege](https://github.com/UwUDev/ygege): see [ygege docker guide](https://github.com/UwUDev/ygege/blob/develop/docs/docker-guide.md) for docker setup
 - Automatically rebuilds when the base image or either indexer is updated
 - Ready to use after container startup
 
