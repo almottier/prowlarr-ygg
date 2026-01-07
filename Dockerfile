@@ -10,7 +10,7 @@ RUN apk update && \
 # Download YGG-API indexer
 RUN echo "Fetching YGG-API gist hash: ${GIST_HASH}" && \
     mkdir -p /Clemv95 && \
-    git clone https://gist.github.com/8bfded23ef23ec78f6678896f42a2b60.git /Clemv95/ygg-api && \
+    git clone https://gist.github.com/3f905505a9586d7d9c13d759ccba9de8.git /Clemv95/ygg-api && \
     mkdir -p /app/indexer-definitions && \
     cp /Clemv95/ygg-api/ygg-api-download.yml /app/indexer-definitions/ && \
     rm -rf /Clemv95

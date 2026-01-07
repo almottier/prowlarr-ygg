@@ -47,7 +47,7 @@ jobs:
           retry_wait_seconds: 5
           command: |
             # Fetch raw content from public gist
-            GIST_CONTENT=$(curl -s https://gist.githubusercontent.com/Clemv95/8bfded23ef23ec78f6678896f42a2b60/raw/ygg-api-download.yml)
+            GIST_CONTENT=$(curl -s https://gist.githubusercontent.com/almottier/3f905505a9586d7d9c13d759ccba9de8/raw/4229560b3a73bbc3cdb52e1595a7530efbda6b67/ygg-api-download.yml)
             GIST_HASH=$(echo "$GIST_CONTENT" | sha256sum | cut -d' ' -f1)
             
             if [ -z "$GIST_CONTENT" ] ; then
